@@ -10,19 +10,18 @@ body {
 header {
     background-color: #333;
     color: white;
-    padding: 20px;
+    padding: 1px;
     font-size: 24px;
     text-align: center;
 }
 
-/* Navbar Styles */
 .navbar {
     display: flex;
-    justify-content: space-between; /* Space out items */
+    justify-content: space-between; 
     align-items: center; /* Align items vertically */
-    background-color: #007bff; /* Blue background */
+    background-color: #333; /* Blue background */
     padding: 10px 20px; /* Add padding */
-    margin-bottom: 20px; /* Add spacing below the navbar */
+    margin-bottom: 0px; /* Add spacing below the navbar */
 }
 
 .navbar a.nav-button {
