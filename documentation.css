@@ -1,0 +1,100 @@
+/* documentation.css */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    text-align: left;
+}
+
+header {
+    background-color: #333;
+    color: white;
+    padding: 20px;
+    font-size: 24px;
+    text-align: center;
+}
+
+/* Navbar Styles */
+.navbar {
+    display: flex;
+    justify-content: space-between; /* Space out items */
+    align-items: center; /* Align items vertically */
+    background-color: #007bff; /* Blue background */
+    padding: 10px 20px; /* Add padding */
+    margin-bottom: 20px; /* Add spacing below the navbar */
+}
+
+.navbar a.nav-button {
+    text-decoration: none;
+    color: white;
+    background-color: #0056b3; /* Darker blue for buttons */
+    padding: 10px 15px; /* Add padding to buttons */
+    border-radius: 5px; /* Rounded corners */
+    font-size: 16px;
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+}
+
+.navbar a.nav-button:hover {
+    background-color: #004085; /* Even darker blue on hover */
+}
+
+.module-navigation {
+    display: flex;
+    gap: 10px; /* Add spacing between buttons */
+}
+
+main {
+    margin: 20px;
+    text-align: left;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin: 10px 0;
+}
+
+a {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Profile Section */
+.profile {
+    display: flex;
+    align-items: flex-start;
+    margin: 20px;
+    gap: 20px;
+}
+
+.profile-pic img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-description {
+    flex: 1;
+}
+
+.profile-description h2 {
+    margin: 0 0 10px 0;
+    font-size: 20px;
+}
+
+.profile-description p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
