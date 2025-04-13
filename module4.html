@@ -12,7 +12,7 @@
     <nav class="navbar">
         <a href="index.html" class="nav-button">Home</a>
         <div class="module-navigation">
-            <a href="module4.html" class="nav-button">Previous Module</a>
+            <a href="module3.html" class="nav-button">Previous Module</a>
             <a href="module5.html" class="nav-button">Next Module</a>
         </div>
     </nav>
@@ -20,6 +20,91 @@
         <h1>Module 4 Summary</h1>
     </header>
     <main>
+        <h1>Introduction to Tinkercad</h1>
+
+        <p><strong>Tinkercad</strong> is a free, online platform developed by Autodesk that allows users to create 3D designs, simulate circuits, and write code for microcontrollers. It's widely used by students, hobbyists, and educators.</p>
+
+        <h2>Key Features</h2>
+        <ul>
+            <li><strong>3D Design:</strong> Create and modify 3D models using a drag-and-drop interface.</li>
+            <li><strong>Circuits:</strong> Build and simulate electronic circuits using components like resistors, LEDs, and microcontrollers.</li>
+            <li><strong>Codeblocks:</strong> Visual programming using block-based coding for animations and simulations.</li>
+            <li><strong>Microcontroller Support:</strong> Simulate Arduino projects with coding in C/C++ or blocks.</li>
+        </ul>
+
+        <h2>Getting Started</h2>
+        <ul>
+            <li>Visit <a href="https://www.tinkercad.com" target="_blank">www.tinkercad.com</a></li>
+            <li>Create a free account or sign in with Google/Autodesk credentials.</li>
+            <li>Choose between <strong>3D Design</strong>, <strong>Circuits</strong>, or <strong>Codeblocks</strong>.</li>
+            <li>Use the intuitive interface to start building your project.</li>
+        </ul>
+
+        <h2>Task 1: Lighting an LED</h2>
+        <p>The following image illusttrate blinking and LED light at certain intervals using tinkercad</p>
+        <img src="ledTestTinkercad.png" alt="ledTestTinkercad" width="800" height="450">
+
+        <h2>Task 2: Varying LED Brightness using PWM</h2>
+        <p>The following images illustrate the circuit and code respectively used to vary LED brightness using PWM values</p>
+        <img src="pwm_circuit.png" alt="pwm_circuit" width="800" height="450">
+        <img src="pwm_code.png" alt="pwm_code" width="800" height="450">
+
+        <h2>Task 2: Illustration of pull up and pull down resistor</h2>
+        <p>The following images illustrate a combined simulation of pull up and pull down resistors (Illustration of circuit and code respectively)</p>
+        <img src="pull_up_pull_down.png" alt="pull_up_pull_down" width="800" heigh="450">
+
+        <pre><code>
+            // Using pull up & pull down resistor
+            // Initialziing LED pull up resistors
+            int LEDPin=8;
+            int buttonPin=12;
+            int buttonRead;
+            // Initializing LED pull down resistors
+            int LEDPin1=7;
+            int buttonPin1=4;
+            int buttonRead1;
+            
+            int dt=100;
+            void setup() {
+              Serial.begin(9600);
+              pinMode(LEDPin, OUTPUT);
+              pinMode(LEDPin1, OUTPUT);
+              pinMode(buttonPin, INPUT);
+              pinMode(buttonPin1, INPUT);
+            }
+            
+            void loop() {
+              buttonRead=digitalRead(buttonPin);
+              buttonRead1=digitalRead(buttonPin1);
+              Serial.println(buttonRead);
+              Serial.println(buttonRead1);
+              delay(dt);
+              // for pull up resistor
+              if(buttonRead==1){
+                digitalWrite(LEDPin,LOW);
+              }
+              if(buttonRead==0){
+                digitalWrite(LEDPin, HIGH);
+              }
+              // for pull down resistor
+              if(buttonRead1==1){
+                digitalWrite(LEDPin1,LOW);
+              }
+              if(buttonRead1==0){
+                digitalWrite(LEDPin1, HIGH);
+              }
+            }
+            
+        </code></pre>
+
+        <h2>Applications</h2>
+        <ul>
+            <li>Learning electronics and programming (Arduino, basic circuits)</li>
+            <li>Creating 3D models for 3D printing</li>
+            <li>Teaching STEM concepts in classrooms</li>
+            <li>Prototyping ideas quickly</li>
+        </ul>
+
 
     </main>
 
