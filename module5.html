@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css" />
+    <title>Module 5</title>
+</head>
+
+<body>
+    <nav class="navbar">
+        <a href="index.html" class="nav-button">Home</a>
+        <div class="module-navigation">
+            <a href="module4.html" class="nav-button">Previous Module</a>
+            <a href="module6.html" class="nav-button">Next Module</a>
+        </div>
+    </nav>
+    <header>
+        <h1>Module 5 Summary</h1>
+    </header>
+    <main>
+        <h1>Sensors & Actuators</h1>
+
+        <h2>Introduction</h2>
+        <p>
+            In this week, we explored the topic of Sensors and Actuators, their differences, and how they are used in embedded systems. The practical part of the training involved building a joystick using two potentiometers connected to an ESP32 board.
+        </p>
+
+        <h2>Sensors and Actuators</h2>
+        <p>
+            A <strong>sensor</strong> is a device that detects or measures a physical property and converts it into an electrical signal. Examples include temperature sensors, light sensors, and motion detectors.
+        </p>
+        <p>
+            An <strong>actuator</strong> is a component that converts an electrical signal into physical movement. Examples of actuators include motors, relays, and speakers.
+        </p>
+
+        <h2>Difference Between Sensors and Actuators</h2>
+        <table border="1" cellpadding="8" cellspacing="0">
+            <thead>
+                <tr>
+                    <th>Sensor</th>
+                    <th>Actuator</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Detects and responds to physical input from the environment.</td>
+                    <td>Performs an action or movement in response to a command.</td>
+                </tr>
+                <tr>
+                    <td>Input device</td>
+                    <td>Output device</td>
+                </tr>
+                <tr>
+                    <td>Examples: temperature sensor, pressure sensor</td>
+                    <td>Examples: DC motor, solenoid, LED</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>Project: Making a Joystick Using Two Potentiometers</h2>
+        <p>
+            As part of our hands-on session, I built a simple joystick using two potentiometers connected to an ESP32 microcontroller. The potentiometers act as analog sensors that detect the X and Y positions. The values are read through the analog input pins of
+            the ESP32. Depending on the orientation of the potentiometer, specific LEDs light up. In addition the push button was used to light up all of the LEDs.
+        </p>
+
+        <h3>Components Used</h3>
+        <ul>
+            <li>ESP32 Development Board</li>
+            <li>2x 10k Ohm Potentiometers</li>
+            <li>LEDs</li>
+            <li>Push Button</li>
+            <li>Resistors</li>
+            <li>Breadboard and Jumper Wires</li>
+        </ul>
+
+        <h3>Circuit Description</h3>
+        <p>
+            Each potentiometer has three pins: one connected to 3.3V, the middle pin (wiper) connected to an analog input (e.g., GPIO 34 and 35), and the third pin connected to GND. As the knob is turned, the resistance changes, altering the voltage read by the ESP32,
+            hence Lighting up specific LEDs. The output and setup is shown below:
+        </p>
+        <img src="potentiometer1.jpg" alt="potentiometer1" width="450" height="800">
+        <img src="potentiometer2.jpg" alt="potentiometer2" width="800" height="450">
+
+        <h3>Code Snippet</h3>
+        <pre><code>
+            #define POT_1 32
+            #define POT_2 35
+            #define LED_1 2
+            #define LED_2 33
+            #define LED_3 5
+            #define LED_4 4
+            #define BUTTON_PIN 18
+
+            // Debounce variables
+            unsigned long lastDebounceTime = 0;
+            const unsigned long debounceDelay = 50;
+            int lastButtonState = HIGH;
+            int buttonState;
+
+            bool allLEDsMode = false; // Toggle mode flag
+
+            void setup() {
+            Serial.begin(115200);
+            pinMode(LED_1, OUTPUT);
+            pinMode(LED_2, OUTPUT);
+            pinMode(LED_3, OUTPUT);
+            pinMode(LED_4, OUTPUT);
+            pinMode(BUTTON_PIN, INPUT_PULLUP); // Enable internal pull-up
+            pinMode(POT_1, INPUT);
+            pinMode(POT_2, INPUT); // Corrected typo from original code
+            }
+
+            void loop() {
+            int pot1_input = analogRead(POT_1);
+            int pot2_input = analogRead(POT_2);
+            
+            // Button debounce logic
+            int reading = digitalRead(BUTTON_PIN);
+            if (reading != lastButtonState) {
+                lastDebounceTime = millis();
+            }
+
+            if ((millis() - lastDebounceTime) > debounceDelay) {
+                if (reading != buttonState) {
+                buttonState = reading;
+                // Toggle mode on button press (falling edge)
+                if (buttonState == LOW) {
+                    allLEDsMode = !allLEDsMode;
+                }
+                }
+            }
+            lastButtonState = reading;
+
+            if (allLEDsMode) {
+                // All LEDs ON
+                digitalWrite(LED_1, HIGH);
+                digitalWrite(LED_2, HIGH);
+                digitalWrite(LED_3, HIGH);
+                digitalWrite(LED_4, HIGH);
+            } else {
+                // Normal operation based on potentiometers
+                digitalWrite(LED_1, pot1_input == 0 ? HIGH : LOW);
+                digitalWrite(LED_2, pot1_input == 4095 ? HIGH : LOW);
+                digitalWrite(LED_3, pot2_input == 0 ? HIGH : LOW);
+                digitalWrite(LED_4, pot2_input == 4095 ? HIGH : LOW);
+            }
+
+            
+            } 
+        </code></pre>
+
+        <h2>Conclusion</h2>
+        <p>
+            This training enhanced my understanding of sensors and actuators through theory and practical implementation. Using potentiometers as analog sensors gave me hands-on experience with signal reading and microcontroller interfacing.
+        </p>
+    </main>
+</body>
