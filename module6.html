@@ -21,5 +21,68 @@
     </header>
     <main>
         <h1>Introduction to Wired Communication Protocols</h1>
+                <h2>PIR Sensor with Arduino</h2>
+
+        <h2>🔍 What is a PIR Sensor?</h2>
+        <p>
+            A <strong>PIR sensor</strong> (Passive Infrared Sensor) detects motion by measuring infrared (IR) light radiating from objects in its field of view.
+            It’s often used in motion-activated systems like security alarms and lighting.
+        </p>
+
+        <h3>How It Works</h3>
+        <ul>
+            <li>All objects emit infrared radiation.</li>
+            <li>The PIR sensor detects changes in IR levels—like when a person walks by.</li>
+            <li>It uses two IR sensors; motion is detected when there's a difference in IR between them.</li>
+        </ul>
+
+        <h2>🛠️ Required Components</h2>
+        <ul>
+            <li>Arduino Uno</li>
+            <li>PIR Sensor (e.g., HC-SR501)</li>
+            <li>LED</li>
+            <li>220Ω resistor</li>
+            <li>Breadboard and jumper wires</li>
+        </ul>
+
+        <h2>🔌 Wiring</h2>
+        <ul>
+            <li><strong>PIR VCC</strong> → Arduino <strong>5V</strong></li>
+            <li><strong>PIR GND</strong> → Arduino <strong>GND</strong></li>
+            <li><strong>PIR OUT</strong> → Arduino <strong>Digital Pin 2</strong></li>
+            <li><strong>LED Anode (+)</strong> → <strong>Pin 13</strong> through a 220Ω resistor</li>
+            <li><strong>LED Cathode (-)</strong> → <strong>GND</strong></li>
+        </ul>
+
+        <h2>✅ Sample Arduino Code</h2>
+        <pre><code>
+        int pirPin = 2;      // PIR sensor output pin
+        int ledPin = 13;     // Onboard LED pin
+
+        void setup() {
+        pinMode(pirPin, INPUT);
+        pinMode(ledPin, OUTPUT);
+        Serial.begin(9600);
+        }
+
+        void loop() {
+        int motionDetected = digitalRead(pirPin);
+
+        if (motionDetected == HIGH) {
+            digitalWrite(ledPin, HIGH); // Turn on LED
+            Serial.println("Motion detected!");
+        } else {
+            digitalWrite(ledPin, LOW);  // Turn off LED
+            Serial.println("No motion.");
+        }
+
+        delay(500); // Delay for stability
+        }
+        </code></pre>
+
+        <h3>Need More?</h3>
+        <p>
+            Want to integrate this with a buzzer, camera, or IoT notification system? Let me know and I can help you expand the project!
+        </p>
     </main>
 </body>
