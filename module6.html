@@ -23,7 +23,7 @@
         <h1>Introduction to Wired Communication Protocols</h1>
                 <h2>PIR Sensor with Arduino</h2>
 
-        <h2>🔍 What is a PIR Sensor?</h2>
+        <h2> What is a PIR Sensor?</h2>
         <p>
             A <strong>PIR sensor</strong> (Passive Infrared Sensor) detects motion by measuring infrared (IR) light radiating from objects in its field of view.
             It’s often used in motion-activated systems like security alarms and lighting.
@@ -36,7 +36,7 @@
             <li>It uses two IR sensors; motion is detected when there's a difference in IR between them.</li>
         </ul>
 
-        <h2>🛠️ Required Components</h2>
+        <h2>Required Components</h2>
         <ul>
             <li>Arduino Uno</li>
             <li>PIR Sensor (e.g., HC-SR501)</li>
@@ -45,7 +45,7 @@
             <li>Breadboard and jumper wires</li>
         </ul>
 
-        <h2>🔌 Wiring</h2>
+        <h2> Wiring</h2>
         <ul>
             <li><strong>PIR VCC</strong> → Arduino <strong>5V</strong></li>
             <li><strong>PIR GND</strong> → Arduino <strong>GND</strong></li>
@@ -54,30 +54,55 @@
             <li><strong>LED Cathode (-)</strong> → <strong>GND</strong></li>
         </ul>
 
-        <h2>✅ Sample Arduino Code</h2>
+        <h2>Sample Arduino Project</h2>
+        <img src="pirSensor.png" alt="pir-pic" width="800" height="450">
+        <h3>Project code</h3>
         <pre><code>
-        int pirPin = 2;      // PIR sensor output pin
-        int ledPin = 13;     // Onboard LED pin
+            #include &lt;Wire.h&gt;
+            #include &lt;LiquidCrystal_I2C.h&gt;
+            LiquidCrystal_I2C lcd(0x27, 16, 2);
 
-        void setup() {
-        pinMode(pirPin, INPUT);
-        pinMode(ledPin, OUTPUT);
-        Serial.begin(9600);
-        }
+            int pirPin = 2;      // PIR sensor output pin
+            int ledPin = 13;     // Onboard LED pin
 
-        void loop() {
-        int motionDetected = digitalRead(pirPin);
+            void setup() {
+            lcd.init();
+            lcd.backlight();
+            pinMode(pirPin, INPUT);
+            pinMode(ledPin, OUTPUT);
+            Serial.begin(9600);
+            lcd.setCursor(0,0);
+            lcd.print("PIR LCD");
+            lcd.setCursor(0,1);
+            lcd.print("SENSOR");
+            }
 
-        if (motionDetected == HIGH) {
-            digitalWrite(ledPin, HIGH); // Turn on LED
-            Serial.println("Motion detected!");
-        } else {
-            digitalWrite(ledPin, LOW);  // Turn off LED
-            Serial.println("No motion.");
-        }
+            void loop() {
+            int motionDetected = digitalRead(pirPin);
 
-        delay(500); // Delay for stability
-        }
+            if (motionDetected == HIGH) {
+                digitalWrite(ledPin, HIGH); // Turn on LED
+                lcd.setCursor(0,0);
+                lcd.print("Motion");
+                lcd.setCursor(0,1);
+                lcd.print("detected!");
+                delay(500);
+                lcd.clear();
+                Serial.println("Motion detected!");
+            } else {
+                digitalWrite(ledPin, LOW);  // Turn off LED
+                lcd.setCursor(0,0);
+                lcd.print("No");
+                lcd.setCursor(0,1);
+                lcd.print("motion!");
+                delay(500);
+                lcd.clear();
+                Serial.println("No motion.");
+            }
+
+            delay(500); 
+            }
+
         </code></pre>
 
         

@@ -351,7 +351,7 @@
         <h2>ESP32 Web Server</h2>
         <p>This code sets up a basic web server to control LED states and brightness through a web interface.</p>
         <p>In this case the ESP acts as a WiFi station.</p>
-        <img src="" alt="" width="800" height="450">
+        <img src="webServer1.jpg" alt="" width="800" height="450">
 
         <h3>Code Snippet</h3>
         <pre><code>
@@ -370,11 +370,11 @@
             int ledBrightness = 0;
             
             const char html[] PROGMEM = R"rawliteral(
-            <!DOCTYPE html>
-            <html>
-            <head>
-            <title>ESP32 Web Server</title>
-            <style>
+            &lt;!DOCTYPE html&gt;
+            &lt;html&gt;
+            &lt;head&gt;
+            &lt;title&gt;ESP32 Web Server&lt;/title&gt;
+            &lt;style&gt;
                 body {
                 font-family: sans-serif;
                 }
@@ -395,20 +395,20 @@
                 input[type=range] {
                 width: 50%;
                 }
-            </style>
-            </head>
-            <body>
-            <div class="container">
-                <h1>ESP32 Web Server</h1>
-                <br>
-                <h3>LED1 State Control</h3>
-                <button id="button" onclick="toggleLED()">LED: OFF</button>
-                <br>
-                <br>
-                <h3>LED2 Brightness Control</h3>
-                <input type="range" id="trackbar" min="0" max="255" step="1" value="0" oninput="setBrightness()">
-            </div>
-            <script>
+            &lt;/style&gt;
+            &lt;/head&gt;
+            &lt;body&gt;
+            &lt;div class=&quot;container&quot;&gt;
+                &lt;h1&gt;ESP32 Web Server&lt;/h1&gt;
+                &lt;br&gt;
+                &lt;h3&gt;LED1 State Control&lt;/h3&gt;
+                &lt;button id=&quot;button&quot; onclick=&quot;toggleLED()&quot;&gt;LED: OFF&lt;/button&gt;
+                &lt;br&gt;
+                &lt;br&gt;
+                &lt;h3&gt;LED2 Brightness Control&lt;/h3&gt;
+                &lt;input type=&quot;range&quot; id=&quot;trackbar&quot; min=&quot;0&quot; max=&quot;255&quot; step=&quot;1&quot; value=&quot;0&quot; oninput=&quot;setBrightness()&quot;&gt;
+            &lt;/div&gt;
+            &lt;script&gt;
                 var ledState = false;
                 var ledBrightness = 0;
                 var button = document.getElementById('button');
@@ -427,9 +427,9 @@
                 xhr.open('GET', '/brightness?value=' + ledBrightness, true);
                 xhr.send();
                 }
-            </script>
-            </body>
-            </html>
+            &lt;/script&gt;
+            &lt;/body&gt;
+            &lt;/html&gt;
             )rawliteral";
             
             void handleRoot() {
@@ -481,7 +481,7 @@
 
         <p>This code sets up a basic web server to control LED states and brightness through a web interface.</p>
         <p>In this case the ESP acts as an Access Point.</p>
-        <img src="" alt="" width="800" height="450">
+        <img src="webServer2.jpg" alt="" width="800" height="450">
 
         <h3>Code Snippet</h3>
         
@@ -501,11 +501,11 @@
             int ledBrightness = 0;
             
             const char html[] PROGMEM = R"rawliteral(
-            <!DOCTYPE html>
-            <html>
-            <head>
-            <title>ESP32 Web Server</title>
-            <style>
+            &lt;!DOCTYPE html&gt;
+            &lt;html&gt;
+            &lt;head&gt;
+            &lt;title&gt;ESP32 Web Server&lt;/title&gt;
+            &lt;style&gt;
                 body {
                 font-family: sans-serif;
                 }
@@ -526,20 +526,20 @@
                 input[type=range] {
                 width: 50%;
                 }
-            </style>
-            </head>
-            <body>
-            <div class="container">
-                <h1>ESP32 Web Server</h1>
-                <br>
-                <h3>LED1 State Control</h3>
-                <button id="button" onclick="toggleLED()">LED: OFF</button>
-                <br>
-                <br>
-                <h3>LED2 Brightness Control</h3>
-                <input type="range" id="trackbar" min="0" max="255" step="1" value="0" oninput="setBrightness()">
-            </div>
-            <script>
+            &lt;/style&gt;
+            &lt;/head&gt;
+            &lt;body&gt;
+            &lt;div class=&quot;container&quot;&gt;
+                &lt;h1&gt;ESP32 Web Server&lt;/h1&gt;
+                &lt;br&gt;
+                &lt;h3&gt;LED1 State Control&lt;/h3&gt;
+                &lt;button id=&quot;button&quot; onclick=&quot;toggleLED()&quot;&gt;LED: OFF&lt;/button&gt;
+                &lt;br&gt;
+                &lt;br&gt;
+                &lt;h3&gt;LED2 Brightness Control&lt;/h3&gt;
+                &lt;input type=&quot;range&quot; id=&quot;trackbar&quot; min=&quot;0&quot; max=&quot;255&quot; step=&quot;1&quot; value=&quot;0&quot; oninput=&quot;setBrightness()&quot;&gt;
+            &lt;/div&gt;
+            &lt;script&gt;
                 var ledState = false;
                 var ledBrightness = 0;
                 var button = document.getElementById('button');
@@ -558,9 +558,9 @@
                 xhr.open('GET', '/brightness?value=' + ledBrightness, true);
                 xhr.send();
                 }
-            </script>
-            </body>
-            </html>
+            &lt;/script&gt;
+            &lt;/body&gt;
+            &lt;/html&gt;
             )rawliteral";
             
             void handleRoot() {
