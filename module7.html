@@ -20,6 +20,586 @@
         <h1>Module 7 Summary</h1>
     </header>
     <main>
+        <h1>Wireless Communication Protocals</h1>
+            <p>The following documentation summarizes the ESP32 wireless communication codes and experiments performed during training workshop. </p>
 
+        <h2>WiFi Network Scan</h2>
+        <p>This code scans for nearby WiFi networks and displays SSID, RSSI, channel, and encryption type on the serial monitor.</p>
+        <img src="wifiNetworkScan.png" alt="Wifi-network-scan" width="800" height="450">
+        
+        <h3>Code Snippet</h3>
+        <pre><code>
+        #include "WiFi.h"
+
+        void setup() {
+        Serial.begin(115200);
+
+        // Set WiFi to station mode and disconnect from an AP if it was previously connected.
+        WiFi.mode(WIFI_STA);
+        WiFi.disconnect();
+        delay(100);
+
+        Serial.println("Setup done");
+        }
+
+        void loop() {
+        Serial.println("Scan start");
+
+        // WiFi.scanNetworks will return the number of networks found.
+        int n = WiFi.scanNetworks();
+        Serial.println("Scan done");
+        if (n == 0) {
+            Serial.println("no networks found");
+        } else {
+            Serial.print(n);
+            Serial.println(" networks found");
+            Serial.println("Nr | SSID                             | RSSI | CH | Encryption");
+            for (int i = 0; i < n; ++i) {
+            // Print SSID and RSSI for each network found
+            Serial.printf("%2d", i + 1);
+            Serial.print(" | ");
+            Serial.printf("%-32.32s", WiFi.SSID(i).c_str());
+            Serial.print(" | ");
+            Serial.printf("%4ld", WiFi.RSSI(i));
+            Serial.print(" | ");
+            Serial.printf("%2ld", WiFi.channel(i));
+            Serial.print(" | ");
+            switch (WiFi.encryptionType(i)) {
+                case WIFI_AUTH_OPEN:            Serial.print("open"); break;
+                case WIFI_AUTH_WEP:             Serial.print("WEP"); break;
+                case WIFI_AUTH_WPA_PSK:         Serial.print("WPA"); break;
+                case WIFI_AUTH_WPA2_PSK:        Serial.print("WPA2"); break;
+                case WIFI_AUTH_WPA_WPA2_PSK:    Serial.print("WPA+WPA2"); break;
+                case WIFI_AUTH_WPA2_ENTERPRISE: Serial.print("WPA2-EAP"); break;
+                case WIFI_AUTH_WPA3_PSK:        Serial.print("WPA3"); break;
+                case WIFI_AUTH_WPA2_WPA3_PSK:   Serial.print("WPA2+WPA3"); break;
+                case WIFI_AUTH_WAPI_PSK:        Serial.print("WAPI"); break;
+                default:                        Serial.print("unknown");
+            }
+            Serial.println();
+            delay(10);
+            }
+        }
+        Serial.println("");
+
+        // Delete the scan result to free memory for code below.
+        WiFi.scanDelete();
+
+        // Wait a bit before scanning again.
+        delay(5000);
+        }
+        </code></pre>
+
+        <h2>WiFi Connect</h2>
+        <p>This code connects the ESP32 to a specified WiFi network and displays the assigned local IP address.</p>
+        <img src="connectingToWiFiNetwork.png" alt="Wifi-connect" width="800" height="450">
+        
+        <h3>Code Snippet</h3>
+        <pre><code>
+        #include <WiFi.h>
+ 
+        // Replace with your own network credentials
+        const char* ssid = "Were";
+        const char* password = "CarleenA";
+        
+        void setup(){
+        
+            Serial.begin(115200);
+        
+            WiFi.mode(WIFI_STA);// setting ESP32 in station mode
+            WiFi.begin(ssid, password);
+            Serial.println("\nConnecting to WiFi Network ..");
+        
+            while(WiFi.status() != WL_CONNECTED){
+                Serial.print(".");
+                delay(100);
+            }
+        
+            Serial.println("\nConnected to the WiFi network");
+            Serial.print("Local ESP32 IP: ");
+            Serial.println(WiFi.localIP());
+        }
+        
+        void loop(){
+            // Do Nothing
+        }
+        </code></pre>
+
+        <h2>WiFi Connection Debugging</h2>
+        <p>This code provides detailed connection status information during the WiFi connection process.</p>
+        <img src="WiFiDebbugging.png" alt="wifi-debugging" width="800" height="450">
+
+        <h3>Code Snippet</h3>
+        <pre><code>
+        #include &lt;WiFi.h&gt;
+        
+        const char* ssid = "Were";
+        const char* password = "CarleenA";
+        
+        int WiFiStatus;
+        
+        String Get_WiFiStatus(int Status){
+            switch(Status){
+                case WL_IDLE_STATUS:
+                return "WL_IDLE_STATUS";
+                case WL_SCAN_COMPLETED:
+                return "WL_SCAN_COMPLETED";
+                case WL_NO_SSID_AVAIL:
+                return "WL_NO_SSID_AVAIL";
+                case WL_CONNECT_FAILED:
+                return "WL_CONNECT_FAILED";
+                case WL_CONNECTION_LOST:
+                return "WL_CONNECTION_LOST";
+                case WL_CONNECTED:
+                return "WL_CONNECTED";
+                case WL_DISCONNECTED:
+                return "WL_DISCONNECTED";
+            }
+        }
+        
+        void setup(){
+            Serial.begin(115200);
+            Serial.println("Connecting..");
+            WiFi.begin(ssid, password);
+            WiFiStatus = WiFi.status();
+            while(WiFiStatus != WL_CONNECTED){
+                delay(250);
+                WiFiStatus = WiFi.status();
+                Serial.println(Get_WiFiStatus(WiFiStatus));
+            }
+            Serial.println("\nConnected To The WiFi Network");
+            Serial.print("Local ESP32 IP: ");
+            Serial.println(WiFi.localIP());
+        }
+        
+        void loop(){
+        // Do Nothing
+        }
+        </code></pre>
+
+        <h2>WiFi RSSI (Signal Strength)</h2>
+        <p>This code connects to a WiFi network and prints the Received Signal Strength Indicator (RSSI) in dBm.</p>
+        <p>The RSSI refers to an estimated measure of the WiFi signal strength measured in dBm.
+            A lower absolute value indicates a stronger WiFi connection. The following list shows how to judge RSSI value and rate the signal strength.
+        </p>
+        <ul>
+        <li><strong>RSSI &gt; -30 dBm:</strong> Amazing!</li>
+        <li><strong>RSSI &lt;= -55 dBm:</strong> Very good signal</li>
+        <li><strong>RSSI &lt;= -67 dBm:</strong> Fairly good</li>
+        <li><strong>RSSI &lt;= -70 dBm:</strong> Okay</li>
+        <li><strong>RSSI &lt;= -80 dBm:</strong> Not good</li>
+        <li><strong>RSSI &lt;= -90 dBm:</strong> Extremely weak signal (unusable)</li>
+        </ul>
+
+        <img src="rssi.png" alt="rssi" width="800" height="450">
+
+        <h3>Code Snippet</h3>
+        <pre><code>
+            #include <WiFi.h>
+            
+            const char* ssid = "Were";
+            const char* password = "CarleenA";
+            
+            void setup(){
+                Serial.begin(115200);
+                WiFi.mode(WIFI_STA);
+                WiFi.begin(ssid, password);
+                Serial.println("\nConnecting");
+                // Keep Waiting Until Connection is Established
+                while(WiFi.status() != WL_CONNECTED){
+                    Serial.print(".");
+                    delay(100);
+                }
+                // Connected Successfully
+                Serial.println("\nConnected To The WiFi Network");
+                Serial.print("Local ESP32 IP: ");
+                Serial.println(WiFi.localIP());
+                // Print The RSSI (Received Signal Strength Indicator)
+                Serial.print("RRSI: ");
+                Serial.print(WiFi.RSSI());
+                Serial.println(" dBm");
+            }
+            
+            void loop(){
+            // Do Nothing
+            }
+            
+        </code></pre>
+
+        <h2>ESP32 Default MAC Address</h2>
+        <p>This code displays the default MAC address of the ESP32.</p>
+        <img src="defaultMac.png" alt="defaultmac" width="800" height="450">
+
+        <h3>Code Snippet</h3>
+        <pre><code>
+            #include &lt;WiFi.h&gt;
+ 
+            void setup(){
+                Serial.begin(115200);
+                Serial.print("\nDefault ESP32 MAC Address: ");
+                Serial.println(WiFi.macAddress());
+            }
+            
+            void loop(){
+            // Do Nothing
+            }
+            
+        </code></pre>
+
+        <h2>Change ESP32 MAC Address</h2>
+        <p>This code changes the ESP32's MAC address and displays both old and new MAC addresses.</p>
+        <img src="changingMacAddress.png" alt="changemacaddress" width="800" height="450">
+
+        <h3>Code Snippet</h3>
+        <pre><code>
+            #include &lt;WiFi.h&gt;
+            #include &lt;esp_wifi.h&gt;
+            uint8_t New_MAC_Address[] = {0x17, 0xAC, 0xBB, 0xCD, 0x13, 0xF5};
+            
+            void setup(){
+                Serial.begin(115200);
+                WiFi.mode(WIFI_STA);
+                Serial.print("\nOLD ESP32 MAC Address: ");
+                Serial.println(WiFi.macAddress());
+                esp_wifi_set_mac(WIFI_IF_STA, New_MAC_Address);
+                Serial.print("NEW ESP32 MAC Address: ");
+                Serial.println(WiFi.macAddress());
+            }
+            void loop(){
+            // Do Nothing
+            }
+        </code></pre>
+
+        <h2>Change ESP32 Hostname</h2>
+        <p>This code sets a custom hostname for the ESP32 on the network.</p>
+        <img src="changingHostname.png" alt="changinghostname" width="800" height="450">
+
+        <h3>Code Snippet</h3>
+        <pre><code>
+            #include &lt;WiFi.h&gt;
+            const char* ssid = "Were";
+            const char* password = "CarleenA";
+            const char* MyHostName = "ESP32-Ojore";
+            
+            void setup(){
+                Serial.begin(115200);
+                WiFi.setHostname(MyHostName);
+                WiFi.mode(WIFI_STA);
+                WiFi.begin(ssid, password);
+                Serial.println("\nConnecting to WiFi Network ..");
+                // Wait until connection is established
+                while(WiFi.status() != WL_CONNECTED){
+                    Serial.print(".");
+                    delay(100);
+                }
+                // Print ESP32's IP & HostName
+                Serial.println("\nConnected to the WiFi network");
+                Serial.print("Local ESP32 IP: ");
+                Serial.println(WiFi.localIP());
+                Serial.print("ESP32 HostName: ");
+                Serial.println(WiFi.getHostname());
+            }
+            
+            void loop(){
+                // Do Nothing
+            }
+        </code></pre>
+
+        <h2>ESP32 Reconnect Using Callback</h2>
+        <p>This code demonstrates automatic reconnection to WiFi using event callbacks on disconnect.</p>
+        <img src="WiFiReconnect.png" alt="reconnecting" width="800" height="450">
+
+        <h3>Code Snippet</h3>
+        <pre><code>
+            #include &lt;WiFi.h&gt;
+            const char* ssid = "Islo";
+            const char* password = "126895snn";
+            
+            
+            void ConnectedToAP_Handler(WiFiEvent_t wifi_event, WiFiEventInfo_t wifi_info) {
+            Serial.println("Connected To The WiFi Network");
+            }
+            
+            void GotIP_Handler(WiFiEvent_t wifi_event, WiFiEventInfo_t wifi_info) {
+            Serial.print("Local ESP32 IP: ");
+            Serial.println(WiFi.localIP());
+            }
+            
+            void WiFi_Disconnected_Handler(WiFiEvent_t wifi_event, WiFiEventInfo_t wifi_info) {
+            Serial.println("Disconnected From WiFi Network");
+            // Attempt Re-Connection
+            WiFi.begin(ssid, password);
+            }
+            
+            void setup() {
+            Serial.begin(115200);
+            
+            WiFi.mode(WIFI_STA);
+            WiFi.onEvent(ConnectedToAP_Handler, ARDUINO_EVENT_WIFI_STA_CONNECTED);
+            WiFi.onEvent(GotIP_Handler, ARDUINO_EVENT_WIFI_STA_GOT_IP);
+            WiFi.onEvent(WiFi_Disconnected_Handler, ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
+            WiFi.begin(ssid, password);
+            Serial.println("Connecting to WiFi Network ..");
+            }
+            
+            void loop() {
+            // Do Nothing
+            }
+
+        </code></pre>
+
+        <h2>ESP32 Web Server</h2>
+        <p>This code sets up a basic web server to control LED states and brightness through a web interface.</p>
+        <p>In this case the ESP acts as a WiFi station.</p>
+        <img src="" alt="" width="800" height="450">
+
+        <h3>Code Snippet</h3>
+        <pre><code>
+            #include &lt;WiFi.h&gt;
+            #include &lt;WebServer.h&gt;
+ 
+            // my network credentials
+            const char* ssid = "Islo";
+            const char* password = "126895snn";
+            
+            WebServer server(80);
+            
+            const int led1Pin = 25;
+            const int led2Pin = 13;
+            int ledState = LOW;
+            int ledBrightness = 0;
+            
+            const char html[] PROGMEM = R"rawliteral(
+            <!DOCTYPE html>
+            <html>
+            <head>
+            <title>ESP32 Web Server</title>
+            <style>
+                body {
+                font-family: sans-serif;
+                }
+                .container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                }
+                button {
+                font-size: 1.5em;
+                margin: 10px;
+                padding: 10px;
+                background-color: lightgray; /* Set the initial background color */
+                }
+                button.on {
+                background-color: green; /* Set the background color when the LED is ON */
+                }
+                input[type=range] {
+                width: 50%;
+                }
+            </style>
+            </head>
+            <body>
+            <div class="container">
+                <h1>ESP32 Web Server</h1>
+                <br>
+                <h3>LED1 State Control</h3>
+                <button id="button" onclick="toggleLED()">LED: OFF</button>
+                <br>
+                <br>
+                <h3>LED2 Brightness Control</h3>
+                <input type="range" id="trackbar" min="0" max="255" step="1" value="0" oninput="setBrightness()">
+            </div>
+            <script>
+                var ledState = false;
+                var ledBrightness = 0;
+                var button = document.getElementById('button');
+                var trackbar = document.getElementById('trackbar');
+                function toggleLED() {
+                ledState = !ledState;
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/led?state=' + (ledState ? '1' : '0'), true);
+                xhr.send();
+                button.innerHTML = 'LED: ' + (ledState ? 'ON' : 'OFF');
+                button.classList.toggle('on', ledState); // Add or remove the 'on' class based on the LED state
+                }
+                function setBrightness() {
+                ledBrightness = trackbar.value;
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/brightness?value=' + ledBrightness, true);
+                xhr.send();
+                }
+            </script>
+            </body>
+            </html>
+            )rawliteral";
+            
+            void handleRoot() {
+            server.send(200, "text/html", html);
+            }
+            
+            void handleLED() {
+            ledState = server.arg("state").toInt();
+            digitalWrite(led1Pin, ledState);
+            server.send(200, "text/plain", String(ledState));
+            }
+            
+            void handleBrightness() {
+            ledBrightness = server.arg("value").toInt();
+            analogWrite(led2Pin, ledBrightness);
+            server.send(200, "text/plain", String(ledBrightness));
+            }
+            
+            void setup() {
+            Serial.begin(115200);
+            pinMode(led1Pin, OUTPUT);
+            pinMode(led2Pin, OUTPUT);
+            digitalWrite(led1Pin, ledState);
+            analogWrite(led2Pin, ledBrightness);
+            // WiFi Configuration & Init
+            WiFi.mode(WIFI_STA);
+            WiFi.begin(ssid, password);
+            Serial.print("Connecting To WiFi Network .");
+            while (WiFi.status() != WL_CONNECTED) {
+                Serial.print(".");
+                delay(100);
+            }
+            // Connected Successfully
+            Serial.println("\nConnected To The WiFi Network");
+            Serial.print("Local ESP32 IP: ");
+            Serial.println(WiFi.localIP());
+            // Attach Server Handler Functions & Start WebServer
+            server.on("/", handleRoot);
+            server.on("/led", handleLED);
+            server.on("/brightness", handleBrightness);
+            server.begin();
+            }
+            
+            void loop() {
+            server.handleClient();
+            }
+
+        </code></pre>
+
+        <p>This code sets up a basic web server to control LED states and brightness through a web interface.</p>
+        <p>In this case the ESP acts as an Access Point.</p>
+        <img src="" alt="" width="800" height="450">
+
+        <h3>Code Snippet</h3>
+        
+        <pre><code>
+            #include <WiFi.h>
+            #include <WebServer.h>
+            
+            // Replace With Your Desired SSID & Password
+            const char* ssid = "ojore";
+            const char* password = "12345678";
+            
+            WebServer server(80);
+            
+            const int led1Pin = 25;
+            const int led2Pin = 13;
+            int ledState = LOW;
+            int ledBrightness = 0;
+            
+            const char html[] PROGMEM = R"rawliteral(
+            <!DOCTYPE html>
+            <html>
+            <head>
+            <title>ESP32 Web Server</title>
+            <style>
+                body {
+                font-family: sans-serif;
+                }
+                .container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                }
+                button {
+                font-size: 1.5em;
+                margin: 10px;
+                padding: 10px;
+                background-color: lightgray; /* Set the initial background color */
+                }
+                button.on {
+                background-color: green; /* Set the background color when the LED is ON */
+                }
+                input[type=range] {
+                width: 50%;
+                }
+            </style>
+            </head>
+            <body>
+            <div class="container">
+                <h1>ESP32 Web Server</h1>
+                <br>
+                <h3>LED1 State Control</h3>
+                <button id="button" onclick="toggleLED()">LED: OFF</button>
+                <br>
+                <br>
+                <h3>LED2 Brightness Control</h3>
+                <input type="range" id="trackbar" min="0" max="255" step="1" value="0" oninput="setBrightness()">
+            </div>
+            <script>
+                var ledState = false;
+                var ledBrightness = 0;
+                var button = document.getElementById('button');
+                var trackbar = document.getElementById('trackbar');
+                function toggleLED() {
+                ledState = !ledState;
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/led?state=' + (ledState ? '1' : '0'), true);
+                xhr.send();
+                button.innerHTML = 'LED: ' + (ledState ? 'ON' : 'OFF');
+                button.classList.toggle('on', ledState); // Add or remove the 'on' class based on the LED state
+                }
+                function setBrightness() {
+                ledBrightness = trackbar.value;
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', '/brightness?value=' + ledBrightness, true);
+                xhr.send();
+                }
+            </script>
+            </body>
+            </html>
+            )rawliteral";
+            
+            void handleRoot() {
+            server.send(200, "text/html", html);
+            }
+            
+            void handleLED() {
+            ledState = server.arg("state").toInt();
+            digitalWrite(led1Pin, ledState);
+            server.send(200, "text/plain", String(ledState));
+            }
+            
+            void handleBrightness() {
+            ledBrightness = server.arg("value").toInt();
+            analogWrite(led2Pin, ledBrightness);
+            server.send(200, "text/plain", String(ledBrightness));
+            }
+            
+            void setup() {
+            Serial.begin(115200);
+            pinMode(led1Pin, OUTPUT);
+            pinMode(led2Pin, OUTPUT);
+            digitalWrite(led1Pin, ledState);
+            analogWrite(led2Pin, ledBrightness);
+            // WiFi AP Configuration & Init
+            Serial.println("Setting Up ESP32 AP Network..");
+            WiFi.softAP(ssid, password);
+            Serial.print("ESP32 AP IP: ");
+            Serial.println(WiFi.softAPIP());
+            // Attach Server Handler Functions & Start WebServer
+            server.on("/", handleRoot);
+            server.on("/led", handleLED);
+            server.on("/brightness", handleBrightness);
+            server.begin();
+            }
+            
+            void loop() {
+            server.handleClient();
+            }
+        </code></pre>
     </main>
 </body>
