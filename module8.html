@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css" />
+    
     <title>Module 8</title>
 </head>
 <body>
@@ -18,7 +19,176 @@
         <h1>Module 8 Summary</h1>
     </header>
     <main>
-        
+        <div class="stackedit__html">
+            <h2>Wired Communication Protocols (ii)</h2>
+            <hr>
+            <p>This is a continuation of the communication protocols with focus being in</p>
+            <ul>
+                <li>Interfacing the Raspberry Pi Pico using i2c (using AHT10 module).</li>
+                <li>Interfacing the ESP32 using i2c (using AH10 module).</li>
+            </ul>
+            <h2 id="🌡️-reading-aht10-temperature--humidity-with-micropython-d3noob">🌡️ <strong>Reading AHT10 Temperature &amp; Humidity with MicroPython (D3noob)</strong></h2>
+            <h3 id="️⃣-about-the-aht10-sensor">1️⃣ <strong>About the AHT10 Sensor</strong></h3>
+            <ul>
+                <li>
+                    <p>The <strong>AHT10</strong> is a digital temperature and humidity sensor that communicates via <strong>I²C</strong>.</p>
+                </li>
+                <li>
+                    <p>📈 <strong>Specifications</strong>:</p>
+                    <ul>
+                        <li>
+                            <p>Temperature: –40°C to +85°C (±0.3 °C accuracy in 0–55°C range)</p>
+                        </li>
+                        <li>
+                            <p>Humidity: 0% to 100% RH (±2% typical accuracy)</p>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <p>Features:</p>
+                    <ul>
+                        <li>
+                            <p>Small form factor</p>
+                        </li>
+                        <li>
+                            <p>Requires minimal external components</p>
+                        </li>
+                        <li>
+                            <p>Communicates at 100 kHz I²C speed</p>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <hr>
+            <h3 id="️⃣-connecting-aht10-to-raspberry-pi-pico">2️⃣ <strong>Connecting AHT10 to Raspberry Pi Pico</strong></h3>
+            <p>Since the AHT10 uses I²C, it requires <strong>VCC</strong>, <strong>GND</strong>, <strong>SDA</strong>, and <strong>SCL</strong> connections.</p>
+            <table class="wiring-table">
+                <thead>
+                    <tr>
+                        <th>AHT10 Pin</th>
+                        <th>Raspberry Pi Pico Pin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>VCC</strong></td>
+                        <td>3.3V (e.g., pin 36)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GND</strong></td>
+                        <td>GND (e.g., pin 38)</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SDA</strong></td>
+                        <td>GPIO 0 (pin 1) or GPIO 4 (pin 6) — your choice</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SCL</strong></td>
+                        <td>GPIO 1 (pin 2) or GPIO 5 (pin 7) — your choice</td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>➡ <strong>Note</strong>: The Pico's I²C pins are flexible, but the default MicroPython examples use I2C(0) on GPIO 0 (SDA) and GPIO 1 (SCL).</p>
+            <p>💡 <strong>Pull-up resistors</strong> (typically 4.7 kΩ) on SDA and SCL are recommended for reliable communication.</p>
+            <hr>
+            <h3 id="️⃣-micropython-i²c-setup">3️⃣ <strong>MicroPython I²C Setup</strong></h3>
+            <p>Set up the I²C bus and define the sensor's address (<code>0x38</code> by default).</p>
+            <pre class=" language-python"><code class="prism  language-python"><span class="token keyword">from</span> machine <span class="token keyword">import</span> I2C<span class="token punctuation">,</span> Pin
+<span class="token keyword">import</span> time
+
+<span class="token comment"># Initialize I2C on I2C(0) with GPIO 0 (SDA) and GPIO 1 (SCL)</span>
+i2c <span class="token operator">=</span> I2C<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> scl<span class="token operator">=</span>Pin<span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">,</span> sda<span class="token operator">=</span>Pin<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span> freq<span class="token operator">=</span><span class="token number">100000</span><span class="token punctuation">)</span>
+
+AHT10_ADDR <span class="token operator">=</span> <span class="token number">0x38</span>
+</code></pre>
+            <hr>
+            <h3 id="️⃣-triggering-a-measurement">4️⃣ <strong>Triggering a Measurement</strong></h3>
+            <p>To start a measurement:</p>
+            <ul>
+                <li>
+                    <p>Send command: <code>0xAC 0x33 0x00</code></p>
+                </li>
+                <li>
+                    <p>Wait ≥75ms for the sensor to complete measurement</p>
+                </li>
+                <li>
+                    <p>Read 6 bytes of data</p>
+                </li>
+            </ul>
+            <p>Example code:</p>
+            <pre class=" language-python"><code class="prism  language-python"><span class="token keyword">def</span> <span class="token function">read_aht10</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    <span class="token comment"># Trigger measurement</span>
+    i2c<span class="token punctuation">.</span>writeto<span class="token punctuation">(</span>AHT10_ADDR<span class="token punctuation">,</span> b<span class="token string">'\xAC\x33\x00'</span><span class="token punctuation">)</span>
+    time<span class="token punctuation">.</span>sleep_ms<span class="token punctuation">(</span><span class="token number">80</span><span class="token punctuation">)</span>
+
+    <span class="token comment"># Read 6 bytes response</span>
+    data <span class="token operator">=</span> i2c<span class="token punctuation">.</span>readfrom<span class="token punctuation">(</span>AHT10_ADDR<span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">)</span>
+
+    <span class="token comment"># Parse humidity (20 bits: bits [3:0] of data[1], data[2], data[3])</span>
+    humidity_raw <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>data<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">&amp;</span> <span class="token number">0x0F</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token number">16</span><span class="token punctuation">)</span> <span class="token operator">|</span> <span class="token punctuation">(</span>data<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span> <span class="token operator">&lt;&lt;</span> <span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">|</span> data<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span>
+    humidity <span class="token operator">=</span> <span class="token punctuation">(</span>humidity_raw <span class="token operator">*</span> <span class="token number">100</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">&lt;&lt;</span> <span class="token number">20</span><span class="token punctuation">)</span>
+
+    <span class="token comment"># Parse temperature (20 bits: bits [7:4] of data[3], data[4], data[5])</span>
+    temperature_raw <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>data<span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">]</span> <span class="token operator">&amp;</span> <span class="token number">0xF0</span><span class="token punctuation">)</span> <span class="token operator">&gt;&gt;</span> <span class="token number">4</span><span class="token punctuation">)</span> <span class="token operator">&lt;&lt;</span> <span class="token number">16</span> <span class="token operator">|</span> <span class="token punctuation">(</span>data<span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">]</span> <span class="token operator">&lt;&lt;</span> <span class="token number">8</span><span class="token punctuation">)</span> <span class="token operator">|</span> data<span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span>
+    temperature <span class="token operator">=</span> <span class="token punctuation">(</span>temperature_raw <span class="token operator">*</span> <span class="token number">200</span><span class="token punctuation">)</span> <span class="token operator">/</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">&lt;&lt;</span> <span class="token number">20</span><span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">50</span>
+
+    <span class="token keyword">return</span> temperature<span class="token punctuation">,</span> humidity
+</code></pre>
+            <hr>
+            <h3 id="️⃣-main-loop-example">5️⃣ <strong>Main Loop Example</strong></h3>
+            <p>Print temperature and humidity every 2 seconds:</p>
+            <pre class=" language-python"><code class="prism  language-python"><span class="token keyword">while</span> <span class="token boolean">True</span><span class="token punctuation">:</span>
+    temp<span class="token punctuation">,</span> hum <span class="token operator">=</span> read_aht10<span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">print</span><span class="token punctuation">(</span>f<span class="token string">"Temperature: {temp:.2f} °C, Humidity: {hum:.2f} %"</span><span class="token punctuation">)</span>
+    time<span class="token punctuation">.</span>sleep<span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
+</code></pre>
+            <hr>
+            <h3 id="️⃣-key-insights">6️⃣ <strong>Key Insights</strong></h3>
+            <p>✅ <strong>Conversion formulas</strong></p>
+            <ul>
+                <li>
+                    <p><strong>Humidity</strong>:</p>
+                    <p>RH=20-bit raw humidity×100220RH = \frac{\text{20-bit raw humidity} \times 100}{2^{20}}</p>
+                </li>
+                <li>
+                    <p><strong>Temperature</strong>:</p>
+                    <p>T=20-bit raw temperature×200220−50T = \frac{\text{20-bit raw temperature} \times 200}{2^{20}} - 50</p>
+                </li>
+            </ul>
+            <p>✅ <strong>Timing</strong></p>
+            <ul>
+                <li>Ensure sufficient delay (≥75 ms) after sending trigger before reading data.</li>
+            </ul>
+            <p>✅ <strong>Bit Manipulation</strong></p>
+            <ul>
+                <li>The data format packs humidity and temperature into overlapping bytes; precise masking and shifting is essential.</li>
+            </ul>
+            <hr>
+            <h3 id="️⃣-conclusion">7️⃣ <strong>Conclusion</strong></h3>
+            <ul>
+                <li>
+                    <p>This guide provides a solid starting point for interfacing an AHT10 sensor with a Raspberry Pi Pico using MicroPython.</p>
+                </li>
+                <li>
+                    <p>The tutorial focuses on raw I²C communication rather than a library, offering insight into how sensor data is retrieved and processed.</p>
+                </li>
+            </ul>
+            <hr>
+            <h3 id="💡-suggestions-for-expansion">💡 Suggestions for Expansion</h3>
+            <ul>
+                <li>
+                    <p>Add OLED display output for real-time monitoring.</p>
+                </li>
+                <li>
+                    <p>Log data to SD card or transmit via WiFi (Pico W).</p>
+                </li>
+                <li>
+                    <p>Graph readings using tools like <strong>Thonny's plotter</strong> or <strong>Matplotlib</strong> via serial.</p>
+                </li>
+            </ul>
+            <hr>
+            
+        </div>
     </main>
 </body>
 </html>
