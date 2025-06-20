@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css" />
     <title>Module 7</title>
 </head>
-<body>
+<body class = "stackedit__html">
     <nav class="navbar">
         <a href="index.html" class="nav-button">Home</a>
         <div class="module-navigation">
@@ -18,7 +18,260 @@
         <h1>Module 7 Summary</h1>
     </header>
     <main>
-        
+        <h1>Wired Communication Protocols (i)</h1>
+        <p>This is a continuation of wired communication protocals with focus being: </p>
+        <ul>
+            <li>Interfacing Raspberry Pi Pico using SPI</li>
+            <li>Interfacing ESP32 using SPI</li>
+        </ul>
+        <h2>📺 ESP32 + SSD1306 OLED Display</h2>
+        <h2>1. Introduction</h2>
+    <p>This guide shows how to interface a 0.96″ monochrome SSD1306 OLED display (128×64 pixels) with an ESP32 using SPI communication. OLED displays offer excellent contrast, deep blacks, and wide viewing angles due to their self-emissive pixels.</p>
+    
+    <h2>2. SSD1306 Display Basics</h2>
+    <ul>
+        <li><strong>Resolution:</strong> 128×64 pixels</li>
+        <li><strong>Memory:</strong> 1024 bytes GDDRAM (8 pages × 128 segments × 8 bits)</li>
+        <li><strong>Interface:</strong> SPI (7-pin module)</li>
+        <li><strong>Pins:</strong> GND, VCC, SCK, MOSI, RES, DC, CS</li>
+    </ul>
+    
+    <h2>3. Wiring Connections</h2>
+    <p>Connect the OLED display to your ESP32 using the following pin assignments:</p>
+    
+    <table class="wiring-table">
+        <thead>
+            <tr>
+                <th>OLED Pin</th>
+                <th>ESP32 GPIO</th>
+                <th>Function</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>GND</td>
+                <td>GND</td>
+                <td>Ground</td>
+            </tr>
+            <tr>
+                <td>VCC</td>
+                <td>3.3V</td>
+                <td>Power Supply</td>
+            </tr>
+            <tr>
+                <td>D0 (SCK)</td>
+                <td>GPIO 18</td>
+                <td>SPI Clock</td>
+            </tr>
+            <tr>
+                <td>D1 (MOSI)</td>
+                <td>GPIO 23</td>
+                <td>SPI Data</td>
+            </tr>
+            <tr>
+                <td>RES</td>
+                <td>GPIO 17</td>
+                <td>Reset Pin</td>
+            </tr>
+            <tr>
+                <td>DC</td>
+                <td>GPIO 16</td>
+                <td>Data/Command</td>
+            </tr>
+            <tr>
+                <td>CS</td>
+                <td>GPIO 5</td>
+                <td>Chip Select</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <h2>4. Arduino IDE Setup</h2>
+    <div class="highlight">
+        <strong>Required Libraries:</strong>
+        <ol>
+            <li><strong>Adafruit SSD1306</strong> library</li>
+            <li><strong>Adafruit GFX</strong> library</li>
+        </ol>
+        <p>Make sure to select the ESP32 board in Tools → Board.</p>
+    </div>
+    
+    <h2>5. Sample Code</h2>
+    <p>Basic initialization code for the SSD1306 display:</p>
+    
+    <pre><code>
+        #include &lt;SPI.h&gt;
+#include &lt;Adafruit_GFX.h&gt;
+#include &lt;Adafruit_SSD1306.h&gt;
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+#define OLED_MOSI 23
+#define OLED_CLK 18
+#define OLED_DC 16
+#define OLED_CS 5
+#define OLED_RESET 17
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT,
+    OLED_MOSI, OLED_CLK, OLED_DC, OLED_RESET, OLED_CS);
+
+void setup() {
+    Serial.begin(115200);
+    
+    if(!display.begin(SSD1306_SWITCHCAPVCC)) {
+        Serial.println(F("SSD1306 allocation failed"));
+        for(;;);
+    }
+    
+    display.display();
+    delay(2000);
+    display.clearDisplay();
+}
+
+void loop() {
+    // Your display code here
+}
+
+    </code></pre>
+
+    
+    
+    <h2>6. Display Capabilities</h2>
+    <img src="esp32OLED.jpg" alt="esp32-oled" width="800" height="450">
+    <p>The SSD1306 display can show:</p>
+    <ul>
+        <li>Static and inverted text</li>
+        <li>Scrolling text</li>
+        <li>Different font sizes</li>
+        <li>Geometric shapes (lines, rectangles, circles, triangles)</li>
+        <li>Custom bitmap images</li>
+    </ul>
+    
+    <h2>7. Conclusion</h2>
+    <p>This tutorial provides a complete guide for connecting and programming an SSD1306 OLED display with ESP32. It's perfect for IoT projects, sensor displays, and embedded applications requiring a compact, high-contrast screen.</p>
+        <h2>Interfacing Raspberry PI Pico using SPI</h2>
+        <div class="stackedit__html"><p>The following is a summary of the tutorial on interfacing an SPI SSD1306 OLED with a Raspberry Pi Pico using MicroPython:</p>
+<hr>
+        <h2 id="🛠️-ssd1306--raspberry-pi-pico-via-spi-techatronic">🛠️ SSD1306 + Raspberry Pi Pico via SPI </h2>
+        <h3 id="overview">1. Overview</h3>
+        <img src="helloWorldOLEDPico.jpg" alt="hello-world-pico" width="800" height="450">
+        <ul>
+        <li>
+        <p>Interface a 128×64 SSD1306 OLED display with a Raspberry Pi Pico using SPI and MicroPython. </p>
+        </li>
+        <li>
+        <p>Requires writing a driver (<code>ssd1306.py</code>) that implements an <code>SSD1306_SPI</code> class.</p>
+        </li>
+        </ul>
+        <hr>
+        <h3 id="ssd1306.py-library-highlights">2. <code>ssd1306.py</code> Library Highlights</h3>
+        <ul>
+        <li>
+        <p>Defines <code>SSD1306_SPI</code> class inheriting from frame buffer driver.</p>
+        </li>
+        <li>
+        <p><code>__init__(…)</code> sets display size, SPI bus, and control pins (DC, RES, CS) and performs reset/init sequence.</p>
+        </li>
+        <li>
+        <p>Methods:</p>
+        <ul>
+        <li>
+        <p><code>write_cmd(cmd)</code>: Sends command byte via SPI.</p>
+        </li>
+        <li>
+        <p><code>write_data(buf)</code>: Sends a data buffer to display.</p>
+        </li>
+        </ul>
+        </li>
+        <li>
+        <p>SPI speed set at ~10 MHz. (<a href="https://github.com/rongrimes/ssd1306?utm_source=chatgpt.com" title="Raspberry Pi Pico with SPI SSD1306 display - GitHub">github.com</a>, <a href="https://techatronic.com/ssd1306-raspberry-pi-pico/?utm_source=chatgpt.com" title="SSD1306 Raspberry Pi Pico | SPI | MicroPython Tutorial - Techatronic">techatronic.com</a>, <a href="https://www.reddit.com/r/RASPBERRY_PI_PROJECTS/comments/ppsn2o/tutorial_raspberry_pi_pico_display_animation_oled/?utm_source=chatgpt.com" title="Tutorial Raspberry Pi Pico: Display animation oled ssd1306 128x64 ...">reddit.com</a>)</p>
+        </li>
+        </ul>
+        <hr>
+        <h3 id="wiring--initialization">3. Wiring &amp; Initialization</h3>
+        <ul>
+        <li>
+        <p>Use SPI(0) on Pico with:</p>
+        <ul>
+        <li>
+        <p>SCK → GPIO18</p>
+        </li>
+        <li>
+        <p>MOSI → GPIO19</p>
+        </li>
+        <li>
+        <p>CS → GPIO16</p>
+        </li>
+        </ul>
+        </li>
+        <li>
+        <p>DC and RST pins are chosen arbitrarily (e.g., GPIO17, GPIO20).</p>
+        </li>
+        <li>
+        <p>Example init code:</p>
+        <pre class=" language-python"><code class="prism  language-python">spi <span class="token operator">=</span> SPI<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">100000</span><span class="token punctuation">,</span> mosi<span class="token operator">=</span>Pin<span class="token punctuation">(</span><span class="token number">19</span><span class="token punctuation">)</span><span class="token punctuation">,</span> sck<span class="token operator">=</span>Pin<span class="token punctuation">(</span><span class="token number">18</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        oled <span class="token operator">=</span> SSD1306_SPI<span class="token punctuation">(</span><span class="token number">128</span><span class="token punctuation">,</span> <span class="token number">64</span><span class="token punctuation">,</span> spi<span class="token punctuation">,</span> Pin<span class="token punctuation">(</span><span class="token number">17</span><span class="token punctuation">)</span><span class="token punctuation">,</span> Pin<span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">,</span> Pin<span class="token punctuation">(</span><span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        ``` <span class="token punctuation">:</span>contentReference<span class="token punctuation">[</span>oaicite<span class="token punctuation">:</span><span class="token number">13</span><span class="token punctuation">]</span><span class="token punctuation">{</span>index<span class="token operator">=</span><span class="token number">13</span><span class="token punctuation">}</span>
+
+        </code></pre>
+        </li>
+        </ul>
+        <hr>
+        <h3 id="main-script-main.py">4. Main Script (<code>main.py</code>)</h3>
+        <ul>
+        <li>
+        <p>Imports necessary modules and initializes SPI and display.</p>
+        </li>
+        <li>
+        <p>Example animation loop:</p>
+        <pre class=" language-python"><code class="prism  language-python"><span class="token keyword">from</span> machine <span class="token keyword">import</span> Pin<span class="token punctuation">,</span> SPI
+        <span class="token keyword">from</span> ssd1306 <span class="token keyword">import</span> SSD1306_SPI
+        <span class="token keyword">from</span> time <span class="token keyword">import</span> sleep_ms
+
+        spi <span class="token operator">=</span> SPI<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">100000</span><span class="token punctuation">,</span> mosi<span class="token operator">=</span>Pin<span class="token punctuation">(</span><span class="token number">19</span><span class="token punctuation">)</span><span class="token punctuation">,</span> sck<span class="token operator">=</span>Pin<span class="token punctuation">(</span><span class="token number">18</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        oled <span class="token operator">=</span> SSD1306_SPI<span class="token punctuation">(</span><span class="token number">128</span><span class="token punctuation">,</span> <span class="token number">64</span><span class="token punctuation">,</span> spi<span class="token punctuation">,</span> Pin<span class="token punctuation">(</span><span class="token number">17</span><span class="token punctuation">)</span><span class="token punctuation">,</span> Pin<span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span><span class="token punctuation">,</span> Pin<span class="token punctuation">(</span><span class="token number">16</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+        <span class="token keyword">while</span> <span class="token boolean">True</span><span class="token punctuation">:</span>
+            <span class="token keyword">try</span><span class="token punctuation">:</span>
+                <span class="token keyword">for</span> i <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">40</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                    <span class="token keyword">for</span> j <span class="token keyword">in</span> <span class="token builtin">range</span><span class="token punctuation">(</span><span class="token number">56</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+                        oled<span class="token punctuation">.</span>fill<span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+                        oled<span class="token punctuation">.</span>text<span class="token punctuation">(</span><span class="token string">"HELLO WORLD"</span><span class="token punctuation">,</span> i<span class="token punctuation">,</span> j<span class="token punctuation">)</span>
+                        oled<span class="token punctuation">.</span>show<span class="token punctuation">(</span><span class="token punctuation">)</span>
+                        sleep_ms<span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>
+            <span class="token keyword">except</span> KeyboardInterrupt<span class="token punctuation">:</span>
+                <span class="token keyword">break</span>
+        ``` <span class="token punctuation">:</span>contentReference<span class="token punctuation">[</span>oaicite<span class="token punctuation">:</span><span class="token number">16</span><span class="token punctuation">]</span><span class="token punctuation">{</span>index<span class="token operator">=</span><span class="token number">16</span><span class="token punctuation">}</span>  
+
+        </code></pre>
+        </li>
+        <li>
+        <p>Scrolling “HELLO WORLD” diagonally until interrupted.</p>
+        </li>
+        </ul>
+        <hr>
+        <h3 id="outcome--feedback">5. Outcome &amp; Feedback</h3>
+        <ul>
+        <li>
+        <p>Tutorial demonstrates a working SPI MicroPython driver for SSD1306 on Raspberry Pi Pico.</p>
+        </li>
+        <li>
+        <p>User comments confirm compatibility with Pico W after reformatting. (<a href="https://techatronic.com/ssd1306-raspberry-pi-pico/?utm_source=chatgpt.com" title="SSD1306 Raspberry Pi Pico | SPI | MicroPython Tutorial - Techatronic">techatronic.com</a>)</p>
+        </li>
+        </ul>
+        <hr>
+        <h3 id="related-resources">6. Related Resources</h3>
+        <ul>
+        <li>
+        <p>Other tutorials (e.g., Random Nerd) cover SSD1306 over I2C for Pico .</p>
+        </li>
+        <li>
+        <p>GitHub repo by rongrimes extends the SPI driver with demos and graphics (<a href="https://github.com/rongrimes/ssd1306?utm_source=chatgpt.com" title="Raspberry Pi Pico with SPI SSD1306 display - GitHub">github.com</a>).</p>
+        </li>
+        </ul>
+        <hr>        
+        </div>
+
     </main>
 </body>
 </html>
